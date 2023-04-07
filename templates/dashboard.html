@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+
   <style>
     p { margin: 0; }
   </style>
@@ -8,9 +9,10 @@
   <p>Dashboard</p>
   <h1>Welcome, {{ current_user.username }}!</h1>
 <br>
-  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" onsubmit="document.getElementById('uploading').style.display = 'block';">
     <input type="file" name="file" onchange="return validateFileSize(this);">
     <input type="submit" value="Upload">
+    <span id="uploading" style="display: none;">Uploading... This may take while depending on your file size. Please do not close this page.</span>
   </form>
 <br>
   <h2>Your Files</h2>
