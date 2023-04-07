@@ -71,7 +71,7 @@ def register():
 @login_required
 def dashboard():
     user_folder = f"users/{current_user.username}"
-    repo = gh.get_repo("TotoB12/drive")
+    repo = gh.get_repo("TotoB12/drive-data")
     try:
         files = repo.get_contents(user_folder)
     except Exception as e:
@@ -89,7 +89,7 @@ def upload():
     if file:
         if file.content_length <= 100 * 1024 * 1024:
             user_folder = f"users/{current_user.username}"
-            repo = gh.get_repo("TotoB12/drive")
+            repo = gh.get_repo("TotoB12/drive-data")
             repo.create_file(f"{user_folder}/{file.filename}", f"Uploaded {file.filename}", file.read())
             flash(f"File '{file.filename}' uploaded successfully.", "success")
         else:
@@ -102,7 +102,7 @@ def upload():
 @login_required
 def download(filename):
     user_folder = f"users/{current_user.username}"
-    repo = gh.get_repo("TotoB12/drive")
+    repo = gh.get_repo("TotoB12/drive-data")
     file = repo.get_contents(f"{user_folder}/{filename}")
     raw_url = file.download_url
 
