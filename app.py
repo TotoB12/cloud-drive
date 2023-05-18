@@ -64,8 +64,8 @@ def login():
 def register():
   form = RegisterForm()
   if form.validate_on_submit():
-    user_exists = User.query.filter_by(username=form.username.data).first()
-    if user_exists:
+    if user_exists := User.query.filter_by(
+        username=form.username.data).first():
       flash("Username already exists, please choose another one", "danger")
     else:
       new_user = User(username=form.username.data, password=form.password.data)
@@ -84,19 +84,17 @@ def dashboard():
   try:
     files = repo.get_contents(user_folder)
   except Exception as e:
-    if e.status == 404:
-      repo.create_file(user_folder + "/.gitkeep", "Create user folder", "")
-      files = []
-    else:
+    if e.status != 404:
       raise e
+    repo.create_file(f"{user_folder}/.gitkeep", "Create user folder", "")
+    files = []
   return render_template("dashboard.html", files=files)
 
 
 @app.route("/upload", methods=["POST"])
 @login_required
 def upload():
-  file = request.files["file"]
-  if file:
+  if file := request.files["file"]:
     if file.content_length <= 100 * 1024 * 1024:
       user_folder = f"users/{current_user.username}"
       repo = gh.get_repo("TotoB12/drive-data")
@@ -105,11 +103,10 @@ def upload():
         repo.get_contents(file_path)
         flash(f"File '{file.filename}' already exists.", "danger")
       except Exception as e:
-        if e.status == 404:
-          repo.create_file(file_path, f"Uploaded {file.filename}", file.read())
-          flash(f"File '{file.filename}' uploaded successfully.", "success")
-        else:
+        if e.status != 404:
           raise e
+        repo.create_file(file_path, f"Uploaded {file.filename}", file.read())
+        flash(f"File '{file.filename}' uploaded successfully.", "success")
     else:
       flash("File size exceeds 100 MB limit.", "danger")
   else:
